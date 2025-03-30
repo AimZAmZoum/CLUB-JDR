@@ -137,4 +137,4 @@ async def on_ready():
     print(f"Connecté en tant que {bot.user}")
 
 
-bot.run(MTM1NDQyMzQ4MTgxODY3NzMyOA.GpepWR.A9JJI94EmtcYRQkTyrCaqX7clOk8f91-2exuvM)
+bot.run(key)
