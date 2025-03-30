@@ -8,7 +8,6 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
-token = os.getenv("TOKEN")
 
 
 intents = discord.Intents.default()
@@ -140,5 +139,5 @@ async def on_ready():
     bot.text_channels = {}
     print(f"Connecté en tant que {bot.user}")
 
-
+TOKEN = os.getenv("TOKEN")
 bot.run(TOKEN)
