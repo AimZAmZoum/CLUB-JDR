@@ -182,6 +182,11 @@ async def on_ready():
     bot.temp_channels = {}
     bot.text_channels = {}
     print(f"Connecté en tant que {bot.user}")
+    
+    for guild in bot.guilds:  # Boucle sur tous les serveurs
+        channel = discord.utils.get(guild.text_channels, name="🍻-taverne")
+        if channel:
+            await channel.send("Le bot est en ligne ! 🎉")
 
 TOKEN = os.getenv("TOKEN")
 bot.run(TOKEN)
