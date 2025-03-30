@@ -7,8 +7,6 @@ import random
 from datetime import datetime
 
 
-key = MTM1NDQyMzQ4MTgxODY3NzMyOA.GpepWR.A9JJI94EmtcYRQkTyrCaqX7clOk8f91-2exuvM
-
 intents = discord.Intents.default()
 intents.message_content = True
 intents.guilds = True
@@ -138,5 +136,5 @@ async def on_ready():
     bot.text_channels = {}
     print(f"Connecté en tant que {bot.user}")
 
-key = os.getenv("token")
-bot.run(key)
+
+bot.run(MTM1NDQyMzQ4MTgxODY3NzMyOA.GpepWR.A9JJI94EmtcYRQkTyrCaqX7clOk8f91-2exuvM)
