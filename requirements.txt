@@ -1,3 +1,7 @@
 discord.py
 python-dotenv
 yt_dlp 
+discord.ext
+random
+datetime 
+asyncio
