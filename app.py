@@ -6,6 +6,9 @@ from discord.ext import commands
 import random
 from datetime import datetime
 
+
+key = MTM1NDQyMzQ4MTgxODY3NzMyOA.GpepWR.A9JJI94EmtcYRQkTyrCaqX7clOk8f91-2exuvM
+
 intents = discord.Intents.default()
 intents.message_content = True
 intents.guilds = True
@@ -61,3 +64,79 @@ async def join(ctx):
         await ctx.send(f"🔊 Connecté à {ctx.author.voice.channel}")
     else:
         await ctx.send("🚨 Tu dois être dans un salon vocal !")
+
+@bot.command()
+async def play(ctx, *, query):
+    vc = ctx.voice_client
+    if not vc:
+        await join(ctx)
+        vc = ctx.voice_client
+
+    if ctx.guild.id not in playlists:
+        playlists[ctx.guild.id] = []
+
+    playlists[ctx.guild.id].append(query)
+
+    if not vc.is_playing():
+        await play_next(ctx)
+    else:
+        await ctx.send(f"🎵 Ajouté à la playlist : {query}")
+
+@bot.command()
+async def stop(ctx):
+    if ctx.voice_client:
+        await ctx.voice_client.disconnect()
+        playlists[ctx.guild.id] = []
+        await ctx.send("🚫 Déconnecté et playlist vidée.")
+
+@bot.command()
+async def skip(ctx):
+    if ctx.voice_client and ctx.voice_client.is_playing():
+        ctx.voice_client.stop()
+        await ctx.send("⏭ Chanson suivante...")
+
+@bot.command()
+async def playlist(ctx):
+    if ctx.guild.id in playlists and playlists[ctx.guild.id]:
+        playlist_str = "\n".join(playlists[ctx.guild.id])
+        await ctx.send(f"📜 Playlist actuelle :\n{playlist_str}")
+    else:
+        await ctx.send("📭 La playlist est vide.")
+
+@bot.event
+async def on_message(message):
+    if message.author.bot:
+        return
+
+    if "quoi" in message.content.lower():
+        await message.channel.send(f"{message.author.mention} feur!")
+
+    await bot.process_commands(message)
+
+@bot.command()
+async def roll(ctx, dice_count: int, dice_faces: int):
+    if dice_count < 1 or dice_faces < 1:
+        await ctx.send("Le nombre de dés et de faces doit être supérieur ou égal à 1.")
+        return
+
+    rolls = [random.randint(1, dice_faces) for _ in range(dice_count)]
+    total = sum(rolls)
+    await ctx.send(f"{ctx.author.display_name} lance {dice_count} dé(s) à {dice_faces} faces...!\nRésultats : {', '.join(map(str, rolls))}\nTotal : {total}")
+
+@bot.command()
+async def clear(ctx, amount: int):
+    if amount <= 0:
+        await ctx.send("Le nombre de messages à supprimer doit être supérieur à 0.")
+        return
+
+    await ctx.channel.purge(limit=amount + 1)
+    await ctx.send(f"{amount} message(s) supprimé(s).", delete_after=5)
+
+@bot.event
+async def on_ready():
+    bot.temp_channels = {}
+    bot.text_channels = {}
+    print(f"Connecté en tant que {bot.user}")
+
+key = os.getenv("token")
+bot.run(key)
