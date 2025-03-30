@@ -5,6 +5,10 @@ import asyncio
 from discord.ext import commands 
 import random
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
+token = os.getenv("TOKEN")
 
 
 intents = discord.Intents.default()
@@ -137,4 +141,4 @@ async def on_ready():
     print(f"Connecté en tant que {bot.user}")
 
 
-bot.run(key)
+bot.run(TOKEN)
