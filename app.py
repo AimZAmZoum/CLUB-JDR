@@ -29,6 +29,50 @@ async def play_next(ctx):
     else:
         await vc.disconnect()
 
+@bot.command()
+async def creer_session(ctx):
+    guild = ctx.guild
+    category_vocal = discord.utils.get(guild.categories, name="Salons vocaux")
+    category_textuel = discord.utils.get(guild.categories, name="Salons textuels")
+    category_archives = discord.utils.get(guild.categories, name="Archives")
+
+    if not all([category_vocal, category_textuel, category_archives]):
+        await ctx.send("❌ Les catégories 'Salons vocaux', 'Salons textuels' ou 'Archives' n'existent pas !")
+        return
+
+    current_date = datetime.now().strftime("%d/%m/%Y")
+    voice_channel_name = f"Salon vocal de {ctx.author.display_name} - {current_date}"
+    text_channel_name = f"Salon textuel de {ctx.author.display_name} - {current_date}"
+
+    voice_channel = await guild.create_voice_channel(name=voice_channel_name, category=category_vocal)
+    text_channel = await guild.create_text_channel(name=text_channel_name, category=category_textuel)
+
+    msg = await ctx.send(f"Salon vocal créé : {voice_channel.mention} et salon textuel créé : {text_channel.mention} \nCliquez sur ❌ pour supprimer le salon vocal.")
+    await msg.add_reaction("❌")
+
+    bot.temp_channels[msg.id] = voice_channel.id
+    bot.text_channels[msg.id] = text_channel.id
+
+@bot.event
+async def on_reaction_add(reaction, user):
+    if user.bot:
+        return
+    if str(reaction.emoji) == "❌" and reaction.message.id in bot.temp_channels:
+        guild = reaction.message.guild
+        voice_channel_id = bot.temp_channels.pop(reaction.message.id, None)
+        text_channel_id = bot.text_channels.pop(reaction.message.id, None)
+        voice_channel = guild.get_channel(voice_channel_id) if voice_channel_id else None
+        text_channel = guild.get_channel(text_channel_id) if text_channel_id else None
+        if voice_channel:
+            await voice_channel.delete()
+            await reaction.message.channel.send(f"🗑️ Salon vocal {voice_channel.name} supprimé.")
+        if text_channel:
+            archive_category = discord.utils.get(guild.categories, name="Archives")
+            if archive_category:
+                await text_channel.edit(category=archive_category)
+                await reaction.message.channel.send(f"📂 Salon textuel {text_channel.name} déplacé dans 'Archives'.")
+        await reaction.message.delete()
+
 async def play_audio(ctx, url):
     vc = ctx.voice_client
     if not vc:
