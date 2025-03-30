@@ -2,4 +2,4 @@ discord.py
 python-dotenv
 yt_dlp
 PyNaCl
-yt-dlp --upgrade
+yt-dlp
